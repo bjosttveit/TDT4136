@@ -55,7 +55,7 @@ def solve(map, start, goal, heuristic='manhattan'):
             neighbor_p = list(np.add(current_p, offset))
 
             neighbor_index = index(neighbor_p)
-            
+
             #We do not need to explore behind us
             if neighbor_index == nodes[current_index]["parent"]:
                 continue
@@ -74,7 +74,7 @@ def solve(map, start, goal, heuristic='manhattan'):
             g = nodes[current_index]["g"] + step_cost
 
             #Check if a better path is already found
-            if nodes.get(neighbor_index) is not None and g > nodes[neighbor_index]["g"]:
+            if nodes.get(neighbor_index) is not None and g >= nodes[neighbor_index]["g"]:
                 continue
 
             closed = True if nodes.get(neighbor_index) is not None and nodes[neighbor_index]["closed"] else False
