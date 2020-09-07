@@ -34,18 +34,18 @@ def solve(map, start, goal, heuristic='manhattan'):
     while not open_queue.empty():
         current_index = open_queue.get()[1]
 
-        #Check if node already explored
+        #Check if node is already explored
         if nodes[current_index]["closed"]:
             continue
         
-        #Check if current node is goal, and if so return path
+        #Check if current node is goal, and if so return path and total cost
         if current_index == goal_index:
             path = [nodes[goal_index]["p"]]
             parent = nodes[goal_index]["parent"]
             while parent is not None:
                 path.insert(0, nodes[parent]["p"])
                 parent = nodes[parent]["parent"]
-            return path
+            return path, nodes[goal_index]["g"]
 
         #Get coordinates of current node
         current_p = nodes[current_index]["p"]
@@ -73,18 +73,22 @@ def solve(map, start, goal, heuristic='manhattan'):
             #Calculate gCost
             g = nodes[current_index]["g"] + step_cost
 
-            #Check if a better path is already found
+            #Check if an equal or better path is already found
             if nodes.get(neighbor_index) is not None and g >= nodes[neighbor_index]["g"]:
                 continue
-
-            closed = True if nodes.get(neighbor_index) is not None and nodes[neighbor_index]["closed"] else False
             
             #Insert/Update node in dict
-            nodes[neighbor_index] = {"p": neighbor_p, "g": g, "f": g + h(neighbor_p, goal), "parent": current_index, "closed": closed}
+            nodes[neighbor_index] = {"p": neighbor_p, "g": g, "f": g + h(neighbor_p, goal), "parent": current_index, "closed": False}
             
-            #Add to open_queue if not already explored
-            if not closed:
-                open_queue.put((nodes[neighbor_index]["f"], neighbor_index))
+            #Add to open_queue
+            open_queue.put((nodes[neighbor_index]["f"], neighbor_index))
+
+            '''
+            Note that if a cheaper path for an existing node is found,
+            it is not propagated to all "children" as the supplement pdf
+            suggests. Instead, if a node is reached by a cheaper path,
+            it is added to the open set again.
+            '''
         
         #Set current node as closed
         nodes[current_index]["closed"] = True

@@ -11,7 +11,8 @@ def main(task):
     start = map_obj.get_start_pos()
     goal = map_obj.get_goal_pos()
 
-    path = solve(intmap, start, goal)
+    path, cost = solve(intmap, start, goal)
+    print("Total cost:", cost)
 
     #Draw path on the map
     for p in path:
