@@ -1,0 +1,1 @@
+To run tasks 1-4: `python Main.py <task-number>`

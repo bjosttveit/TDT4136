@@ -19,7 +19,7 @@ def solve(map, start, goal, heuristic='manhattan'):
     Priorityqueue does not allow editing priorityvalue in existing elements.
     Therefore if it finds a cheaper path to a node, it is added to the
     queue again with the new value. Therefore it will always check if the
-    node was previously explored, because it could have been to the queue
+    node was previously explored, because it could have been added to the queue
     multiple times.
     '''
     open_q = PriorityQueue()
@@ -37,14 +37,19 @@ def solve(map, start, goal, heuristic='manhattan'):
         
         #Check if current node is goal
         if current_index == goal_index:
-            print("DONE!")
-            return 0
+            path = [nodes[goal_index]["p"]]
+            parent = nodes[goal_index]["parent"]
+            while parent is not None:
+                path.insert(0, nodes[parent]["p"])
+                parent = nodes[parent]["parent"]
+            return path
+
         
         current_p = nodes[current_index]["p"]
 
         #Check every neighbor
         for offset in offsets:
-            neighbor_p = np.add(current_p, offset)
+            neighbor_p = list(np.add(current_p, offset))
             
             #Check if point is out of bounds
             if neighbor_p[0] < 0 or neighbor_p[0] > width or neighbor_p[1] < 0 or neighbor_p[1] > height:
