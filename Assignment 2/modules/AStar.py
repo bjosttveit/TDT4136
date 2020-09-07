@@ -53,6 +53,12 @@ def solve(map, start, goal, heuristic='manhattan'):
         #Check every neighbor
         for offset in offsets:
             neighbor_p = list(np.add(current_p, offset))
+
+            neighbor_index = index(neighbor_p)
+            
+            #We do not need to explore behind us
+            if neighbor_index == nodes[current_index]["parent"]:
+                continue
             
             #Check if point is out of bounds
             if not (0 <= neighbor_p[0] < width and 0 <= neighbor_p[1] < height):
@@ -66,8 +72,6 @@ def solve(map, start, goal, heuristic='manhattan'):
             
             #Calculate gCost
             g = nodes[current_index]["g"] + step_cost
-
-            neighbor_index = index(neighbor_p)
 
             #Check if a better path is already found
             if nodes.get(neighbor_index) is not None and g > nodes[neighbor_index]["g"]:
