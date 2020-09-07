@@ -58,7 +58,7 @@ def solve(map, start, goal, heuristic='manhattan'):
             if not (0 <= neighbor_p[0] < width and 0 <= neighbor_p[1] < height):
                 continue
 
-            #Reads the number on the map to get step_cost or wall
+            #Reads the number on the map to get step_cost or if node is a wall
             step_cost = map[neighbor_p[0]][neighbor_p[1]]
             #Check if point is a wall
             if step_cost < 0:
@@ -74,6 +74,7 @@ def solve(map, start, goal, heuristic='manhattan'):
                 continue
 
             closed = True if nodes.get(neighbor_index) is not None and nodes[neighbor_index]["closed"] else False
+            
             #Insert/Update node in dict
             nodes[neighbor_index] = {"p": neighbor_p, "g": g, "f": g + h(neighbor_p, goal), "parent": current_index, "closed": closed}
             

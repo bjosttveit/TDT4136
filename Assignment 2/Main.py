@@ -1,3 +1,5 @@
+#To run tasks 1-4: `python Main.py <task-number>`
+
 import sys
 from modules.Map import Map_Obj
 import modules.AStar as AStar
