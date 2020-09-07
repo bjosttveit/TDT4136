@@ -2,7 +2,7 @@
 
 import sys
 from modules.Map import Map_Obj
-import modules.AStar as AStar
+from modules.AStar import solve
 
 def main(task):
     map_obj = Map_Obj(task=task)
@@ -11,8 +11,9 @@ def main(task):
     start = map_obj.get_start_pos()
     goal = map_obj.get_goal_pos()
 
-    path = AStar.solve(intmap, start, goal)
+    path = solve(intmap, start, goal)
 
+    #Draw path on the map
     for p in path:
         strmap[p[0]][p[1]] = ' P '
 

@@ -24,15 +24,15 @@ def solve(map, start, goal, heuristic='manhattan'):
     node was previously explored, because it could have been added to the queue
     multiple times.
     '''
-    open_q = PriorityQueue()
+    open_queue = PriorityQueue()
 
     #Add the startnode to the dict and queue
     start_index = index(start)
     nodes[start_index] = {"p": start, "g": 0, "f": h(start, goal), "parent": None, "closed": False}
-    open_q.put((nodes[start_index]["f"], start_index))
+    open_queue.put((nodes[start_index]["f"], start_index))
 
-    while not open_q.empty():
-        current_index = open_q.get()[1]
+    while not open_queue.empty():
+        current_index = open_queue.get()[1]
 
         #Check if node already explored
         if nodes[current_index]["closed"]:
@@ -80,7 +80,7 @@ def solve(map, start, goal, heuristic='manhattan'):
             
             #Add to open_queue if not already explored
             if not closed:
-                open_q.put((nodes[neighbor_index]["f"], neighbor_index))
+                open_queue.put((nodes[neighbor_index]["f"], neighbor_index))
         
         #Set current node as closed
         nodes[current_index]["closed"] = True
