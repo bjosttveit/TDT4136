@@ -87,7 +87,9 @@ def solve(map, start, goal, heuristic='manhattan'):
             Note that if a cheaper path for an existing node is found,
             it is not propagated to all "children" as the supplement pdf
             suggests. Instead, if a node is reached by a cheaper path,
-            it is added to the open set again.
+            its parent is updated and it is added to the open set again.
+            I assume it will never actually get there since the heuristic
+            should be good enough. (The pseudocode on wikipedia did the same)
             '''
         
         #Set current node as closed
