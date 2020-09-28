@@ -134,7 +134,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(agent)
         for action in actions:
             successor = gameState.generateSuccessor(agent, action)
-            if agent == numAgents - 1: #Last ghost
+            if agent == numAgents - 1:
                 if depth == 0:
                     v2 = self.evaluationFunction(successor)
                 else:
@@ -177,12 +177,54 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     Your minimax agent with alpha-beta pruning (question 3)
     """
 
+    def maxValue(self, depth, gameState, alpha, beta):
+        if gameState.isWin() or gameState.isLose():
+            return gameState.getScore(), None
+        
+        v = float('-inf')
+        a = None
+        actions = gameState.getLegalActions(0)
+        for action in actions:
+            successor = gameState.generateSuccessor(0, action)
+            v2, _ = self.minValue(depth - 1, successor, 1, alpha, beta)
+            if v2 > v:
+                v, a = v2, action
+                alpha = max(alpha, v)
+            if v > beta:
+                return v, a
+        return v, a
+    
+    def minValue(self, depth, gameState, agent, alpha, beta):
+        if gameState.isWin() or gameState.isLose():
+            return gameState.getScore(), None
+
+        v, v2 = float('inf'), 0
+        numAgents = gameState.getNumAgents()
+        actions = gameState.getLegalActions(agent)
+        for action in actions:
+            successor = gameState.generateSuccessor(agent, action)
+            if agent == numAgents - 1:
+                if depth == 0:
+                    v2 = self.evaluationFunction(successor)
+                else:
+                    v2, _ = self.maxValue(depth, successor, alpha, beta)
+            else:
+                v2, _ = self.minValue(depth, successor, agent + 1, alpha, beta)
+            if v2 < v:
+                v = v2
+                beta = min(beta, v)
+            if v < alpha:
+                return v, None
+
+        return v, None
+
     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        _, a = self.maxValue(self.depth, gameState, float('-inf'), float('inf'))
+        return a
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
