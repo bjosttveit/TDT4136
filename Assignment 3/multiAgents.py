@@ -129,7 +129,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         if gameState.isWin() or gameState.isLose():
             return gameState.getScore(), None
 
-        v = float('inf')
+        v, v2 = float('inf'), 0
         numAgents = gameState.getNumAgents()
         actions = gameState.getLegalActions(agent)
         for action in actions:
@@ -137,13 +137,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
             if agent == numAgents - 1: #Last ghost
                 if depth == 0:
                     v2 = self.evaluationFunction(successor)
-                    v = min(v, v2)
                 else:
                     v2, _ = self.maxValue(depth, successor)
-                    v = min(v, v2)
             else:
                 v2, _ = self.minValue(depth, successor, agent + 1)
-                v = min(v, v2)
+            v = min(v, v2)
 
         return v, None
 
