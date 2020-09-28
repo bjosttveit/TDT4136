@@ -112,35 +112,52 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
 
     def maxValue(self, depth, gameState):
+        #Check for terminal state
         if gameState.isWin() or gameState.isLose():
             return gameState.getScore(), None
         
         v = float('-inf')
         a = None
+
+        #Iterate over all possible actions
         actions = gameState.getLegalActions(0)
         for action in actions:
+            #Generate successor state for action
             successor = gameState.generateSuccessor(0, action)
             v2, _ = self.minValue(depth - 1, successor, 1)
+            #If new utility is greater, update
             if v2 > v:
                 v, a = v2, action
         return v, a
     
+    #Gets run for each ghost by specifying 'agent'
     def minValue(self, depth, gameState, agent):
+        #Check for terminal state
         if gameState.isWin() or gameState.isLose():
             return gameState.getScore(), None
 
         v, v2 = float('inf'), 0
         numAgents = gameState.getNumAgents()
+
+        #Iterate over all possible actions
         actions = gameState.getLegalActions(agent)
         for action in actions:
+            #Generate successor state for action
             successor = gameState.generateSuccessor(agent, action)
+
+            #If this is the last ghost
             if agent == numAgents - 1:
+                #If reached depth-limit, return utility
                 if depth == 0:
                     v2 = self.evaluationFunction(successor)
+                #Else it is pacmans turn again
                 else:
                     v2, _ = self.maxValue(depth, successor)
+            #If there are more ghosts, run minValue again with same depth but next ghost
             else:
                 v2, _ = self.minValue(depth, successor, agent + 1)
+            
+            #If new utility is less, update
             v = min(v, v2)
 
         return v, None
@@ -178,41 +195,60 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
 
     def maxValue(self, depth, gameState, alpha, beta):
+        #Check for terminal state
         if gameState.isWin() or gameState.isLose():
             return gameState.getScore(), None
         
         v = float('-inf')
         a = None
+
+        #Iterate over all possible actions
         actions = gameState.getLegalActions(0)
         for action in actions:
+            #Generate successor state for action
             successor = gameState.generateSuccessor(0, action)
             v2, _ = self.minValue(depth - 1, successor, 1, alpha, beta)
+            #If new utility is greater, update utility and alpha
             if v2 > v:
                 v, a = v2, action
                 alpha = max(alpha, v)
+            #If utility is greater than beta, return and stop iterating
             if v > beta:
                 return v, a
         return v, a
     
     def minValue(self, depth, gameState, agent, alpha, beta):
+        #Check for terminal state
         if gameState.isWin() or gameState.isLose():
             return gameState.getScore(), None
 
         v, v2 = float('inf'), 0
         numAgents = gameState.getNumAgents()
+
+        #Iterate over all possible actions
         actions = gameState.getLegalActions(agent)
         for action in actions:
+            #Generate successor state for action
             successor = gameState.generateSuccessor(agent, action)
+            
+            #If this is the last ghost
             if agent == numAgents - 1:
+                #If reached depth-limit, return utility
                 if depth == 0:
                     v2 = self.evaluationFunction(successor)
+                #Else it is pacmans turn again
                 else:
                     v2, _ = self.maxValue(depth, successor, alpha, beta)
+            #If there are more ghosts, run minValue again with same depth but next ghost
             else:
                 v2, _ = self.minValue(depth, successor, agent + 1, alpha, beta)
+            
+            #If new utility is less, update utility and beta
             if v2 < v:
                 v = v2
                 beta = min(beta, v)
+            
+            #If utility is less than alpha, return and stop iterating
             if v < alpha:
                 return v, None
 
