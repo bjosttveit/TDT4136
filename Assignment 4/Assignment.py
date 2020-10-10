@@ -14,6 +14,8 @@ class CSP:
         # the variable pair (i, j)
         self.constraints = {}
 
+        self.backtrack_calls = 0
+
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
         and 'domain' is a list of the legal values for the variable.
@@ -76,13 +78,14 @@ class CSP:
         # ensure that any changes made to 'assignment' does not have any
         # side effects elsewhere.
         assignment = copy.deepcopy(self.domains)
-
         # Run AC-3 on all constraints in the CSP, to weed out all of the
         # values that are not arc-consistent to begin with
         self.inference(assignment, self.get_all_arcs())
-
         # Call backtrack with the partial assignment 'assignment'
-        return self.backtrack(assignment)
+        self.backtrack_calls = 0
+        result = self.backtrack(assignment)
+        print('Backtrack calls:',self.backtrack_calls)
+        return result
 
     def backtrack(self, assignment):
         """The function 'Backtrack' from the pseudocode in the
@@ -109,7 +112,47 @@ class CSP:
         iterations of the loop.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        self.backtrack_calls += 1
+
+        if self.assignment_is_complete(assignment):
+            return assignment
+        
+        var = self.select_unassigned_variable(assignment)
+        for value in assignment[var]:
+            new_assignment = copy.deepcopy(assignment)
+            if self.value_is_consistent(var, value, new_assignment):
+                new_assignment[var] = [value]
+                inferences = self.inference(new_assignment, self.get_all_neighboring_arcs(var))
+                if inferences:
+                    result = self.backtrack(new_assignment)
+                    if result:
+                        return result
+
+        return False
+
+    def assignment_is_complete(self, assignment):
+        """Checks if assignment is complete
+        """
+        #If any variable has more than one possible assignment return false
+        for var in assignment:
+            if len(assignment[var]) != 1:
+                return False
+        #If all variables have 1 possible assignment return true
+        return True
+    
+    def value_is_consistent(self, var, value, assignment):
+        return True
+        arcs = self.get_all_neighboring_arcs(var)
+        for (i, j) in arcs:
+            if self.arc_is_consistent(assignment, value, i, j) == False:
+                return False
+        return True
+    
+    def arc_is_consistent(self, assignment, value, i, j):
+        for x in assignment[i]:
+            if (x, value) in self.constraints[i][j]:
+                return True
+            return False
 
     def select_unassigned_variable(self, assignment):
         """The function 'Select-Unassigned-Variable' from the pseudocode
@@ -118,7 +161,10 @@ class CSP:
         of legal values has a length greater than one.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        for var in assignment:
+            if len(assignment[var]) > 1:
+                return var
+        return None
 
     def inference(self, assignment, queue):
         """The function 'AC-3' from the pseudocode in the textbook.
@@ -127,7 +173,12 @@ class CSP:
         is the initial queue of arcs that should be visited.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        while len(queue) > 0:
+            (i, j) = queue.pop(0)
+            if self.revise(assignment, i, j):
+                if len(assignment[i]) == 0: return False
+                queue.extend(list(filter(lambda a: a[1] != j, self.get_all_neighboring_arcs(i))))
+        return True
 
     def revise(self, assignment, i, j):
         """The function 'Revise' from the pseudocode in the textbook.
@@ -139,7 +190,18 @@ class CSP:
         legal values in 'assignment'.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        revised = False
+        for x in assignment[i]:
+            if self.any_y_satisfies(assignment, x, i, j) == False:
+                assignment[i] = list(filter(lambda e: e != x, assignment[i]))
+                revised = True
+        return revised
+    
+    def any_y_satisfies(self, assignment, x, i, j):
+        for y in assignment[j]:
+            if (x, y) in self.constraints[i][j]:
+                return True
+        return False
 
 
 def create_map_coloring_csp():
