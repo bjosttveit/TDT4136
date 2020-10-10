@@ -120,13 +120,12 @@ class CSP:
         var = self.select_unassigned_variable(assignment)
         for value in assignment[var]:
             new_assignment = copy.deepcopy(assignment)
-            if self.value_is_consistent(var, value, new_assignment):
-                new_assignment[var] = [value]
-                inferences = self.inference(new_assignment, self.get_all_neighboring_arcs(var))
-                if inferences:
-                    result = self.backtrack(new_assignment)
-                    if result:
-                        return result
+            new_assignment[var] = [value]
+            inferences = self.inference(new_assignment, self.get_all_neighboring_arcs(var))
+            if inferences:
+                result = self.backtrack(new_assignment)
+                if result:
+                    return result
 
         return False
 
@@ -139,20 +138,6 @@ class CSP:
                 return False
         #If all variables have 1 possible assignment return true
         return True
-    
-    def value_is_consistent(self, var, value, assignment):
-        return True
-        arcs = self.get_all_neighboring_arcs(var)
-        for (i, j) in arcs:
-            if self.arc_is_consistent(assignment, value, i, j) == False:
-                return False
-        return True
-    
-    def arc_is_consistent(self, assignment, value, i, j):
-        for x in assignment[i]:
-            if (x, value) in self.constraints[i][j]:
-                return True
-            return False
 
     def select_unassigned_variable(self, assignment):
         """The function 'Select-Unassigned-Variable' from the pseudocode
