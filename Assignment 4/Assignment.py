@@ -15,6 +15,7 @@ class CSP:
         self.constraints = {}
 
         self.backtrack_calls = 0
+        self.backtrack_fails = 0
 
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
@@ -82,9 +83,10 @@ class CSP:
         # values that are not arc-consistent to begin with
         self.inference(assignment, self.get_all_arcs())
         # Call backtrack with the partial assignment 'assignment'
-        self.backtrack_calls = 0
+        self.backtrack_calls = 1
         result = self.backtrack(assignment)
-        print('Backtrack calls:',self.backtrack_calls)
+        print('Backtrack calls:', self.backtrack_calls)
+        print('Backtrack fails:', self.backtrack_fails)
         return result
 
     def backtrack(self, assignment):
@@ -112,8 +114,6 @@ class CSP:
         iterations of the loop.
         """
         # TODO: IMPLEMENT THIS
-        self.backtrack_calls += 1
-
         if self.assignment_is_complete(assignment):
             return assignment
         
@@ -123,10 +123,12 @@ class CSP:
             new_assignment[var] = [value]
             inferences = self.inference(new_assignment, self.get_all_neighboring_arcs(var))
             if inferences:
+                self.backtrack_calls += 1
                 result = self.backtrack(new_assignment)
                 if result:
                     return result
-
+        
+        self.backtrack_fails += 1
         return False
 
     def assignment_is_complete(self, assignment):
@@ -243,9 +245,9 @@ def print_sudoku_solution(solution):
     """
     for row in range(9):
         for col in range(9):
-            print(solution['%d-%d' % (row, col)][0]),
+            print(solution[f'{row}-{col}'][0], end=" "),
             if col == 2 or col == 5:
-                print('|'),
+                print('| ', end=""),
         print("")
         if row == 2 or row == 5:
             print('------+-------+------')
