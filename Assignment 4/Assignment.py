@@ -180,7 +180,7 @@ class CSP:
         revised = False
         for x in assignment[i]:
             if self.any_y_satisfies(assignment, x, i, j) == False:
-                assignment[i] = list(filter(lambda e: e != x, assignment[i]))
+                assignment[i].remove(x)
                 revised = True
         return revised
     
