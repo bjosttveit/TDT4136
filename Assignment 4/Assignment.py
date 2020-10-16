@@ -164,7 +164,7 @@ class CSP:
             (i, j) = queue.pop(0)
             if self.revise(assignment, i, j):
                 if len(assignment[i]) == 0: return False
-                queue.extend(list(filter(lambda a: a[1] != j, self.get_all_neighboring_arcs(i))))
+                queue.extend(list(filter(lambda a: a[0] != j, self.get_all_neighboring_arcs(i))))
         return True
 
     def revise(self, assignment, i, j):
