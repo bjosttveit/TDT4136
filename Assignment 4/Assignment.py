@@ -114,20 +114,29 @@ class CSP:
         iterations of the loop.
         """
         # TODO: IMPLEMENT THIS
+        #Check if assignment is complete
         if self.assignment_is_complete(assignment):
             return assignment
         
+        #Select unassigned variable
         var = self.select_unassigned_variable(assignment)
+
         for value in assignment[var]:
+            #Try one possible value
             new_assignment = copy.deepcopy(assignment)
             new_assignment[var] = [value]
+            
+            #Run ac-3
             inferences = self.inference(new_assignment, self.get_all_neighboring_arcs(var))
             if inferences:
+
+                #If ac-3 successful
                 self.backtrack_calls += 1
                 result = self.backtrack(new_assignment)
                 if result:
                     return result
         
+        #If ac-3 fail
         self.backtrack_fails += 1
         return False
 
@@ -148,6 +157,8 @@ class CSP:
         of legal values has a length greater than one.
         """
         # TODO: IMPLEMENT THIS
+
+        #Selects the first unassigned variable
         for var in assignment:
             if len(assignment[var]) > 1:
                 return var
@@ -178,6 +189,7 @@ class CSP:
         """
         # TODO: IMPLEMENT THIS
         revised = False
+        #Checks if values satisfy constraints
         for x in assignment[i]:
             if self.any_y_satisfies(assignment, x, i, j) == False:
                 assignment[i].remove(x)
@@ -185,6 +197,7 @@ class CSP:
         return revised
     
     def any_y_satisfies(self, assignment, x, i, j):
+        #Checks the constraint for every y for a given x
         for y in assignment[j]:
             if (x, y) in self.constraints[i][j]:
                 return True
